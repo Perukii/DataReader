@@ -1,7 +1,16 @@
 
-namespace Data_reader{
+#include <vector>
+#include <string>
+#include <fstream>
 
-    using data_container = std::vector<std::vector<int>>;
+#ifdef DATA_READER_MODE_STRING
+    #define T std::string
+#else
+    #define T int
+#endif
+
+namespace Data_reader{
+    using data_container = std::vector<std::vector<T>>;
 
     void read_data(data_container& data, const char* file){
 
@@ -23,13 +32,23 @@ namespace Data_reader{
                 }
 
                 if(line[i] == ',' or i == line.length()-1){
-                    data[data.size()-1].push_back(std::atoi(segment.c_str()));
+                    #ifdef DATA_READER_MODE_STRING
+                        data[data.size()-1].push_back(segment);
+                    #else
+                        data[data.size()-1].push_back(std::atoi(segment.c_str()));
+                    #endif
                     segment = "";
                 }
-
             }
-
         }
+    }
+
+    int string_to_int(std::string tar){
+        return std::atoi(tar.c_str());
+    }
+
+    double string_to_double(std::string tar){
+        return double(std::atoi(tar.c_str()));
     }
 
 }
