@@ -3,16 +3,11 @@
 #include <string>
 #include <fstream>
 
-#ifdef DATA_READER_MODE_STRING
-    #define T std::string
-#else
-    #define T int
-#endif
-
 namespace Data_reader{
-    using data_container = std::vector<std::vector<T>>;
 
-    void read_data(data_container& data, const char* file){
+    using data_container = std::vector<std::vector<std::string>>;
+    
+    void read_data(data_container& data, const char* file, bool is_string){
 
         std::ifstream input(file);
 
@@ -32,15 +27,30 @@ namespace Data_reader{
                 }
 
                 if(line[i] == ',' or i == line.length()-1){
-                    #ifdef DATA_READER_MODE_STRING
-                        data[data.size()-1].push_back(segment);
-                    #else
-                        data[data.size()-1].push_back(std::atoi(segment.c_str()));
-                    #endif
+
+                    data[data.size()-1].push_back(segment);
+
                     segment = "";
                 }
             }
         }
+    }
+
+    template<class T>
+    void write_data(std::vector<std::vector<T>>& data, const char * file){
+
+        std::ofstream ofs(file);
+ 
+        for(int i=0;i<data.size();i++){
+            for(int j=0;j<data[i].size();j++){
+                ofs<<data[i][j];
+                if(j!=data[i].size()-1)ofs<<",";
+            }
+            ofs<<std::endl;
+        }
+
+        ofs.close();
+
     }
 
     int string_to_int(std::string tar){
@@ -48,7 +58,7 @@ namespace Data_reader{
     }
 
     double string_to_double(std::string tar){
-        return double(std::atoi(tar.c_str()));
+        return std::stod(tar.c_str());
     }
 
 }
